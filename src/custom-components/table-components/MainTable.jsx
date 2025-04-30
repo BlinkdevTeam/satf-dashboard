@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react"
 import DataTable from 'react-data-table-component';
 import { columns } from './columns';
+import { getItems } from '../../supabase/supabaseService';
 
 const data = [
   	{
@@ -15,10 +17,17 @@ const data = [
 ]
 
 const MainTable = () => {
+	const [participants, setParticipants] = useState([])
+
+	console.log("participants", participants)
+	useEffect(() => {
+		getItems().then(setParticipants).catch(console.error)
+	}, [])
+
 	return (
 		<DataTable
 			columns={columns}
-			data={data}
+			data={participants}
 			selectableRows
 		/>
 	);
