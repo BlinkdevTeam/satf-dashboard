@@ -17,9 +17,14 @@ export const getItems = async () => {
 }
 
 // Update
-export const updateItem = async (id, data) => {
-    const { data: result, error } = await supabase.from('medical_professionals').update(data).eq('id', id)
+export const updateItem = async (email, data) => {
+    console.log("email", email)
+    console.log("data", data)
+    const { data: result, error } = await supabase.from('medical_professionals').update(data).eq('email_address', email)
     if (error) throw error
+
+    console.log("resultttt", result)
+
     return result
 }
 

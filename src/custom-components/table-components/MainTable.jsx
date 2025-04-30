@@ -2,15 +2,15 @@ import { useEffect, useState } from "react"
 import DataTable from 'react-data-table-component';
 import { columns } from './columns';
 import { getItems } from '../../supabase/supabaseService';
-import { tableTheme } from "./columns";
+// import { tableTheme } from "./columns";
 import Widget from "../Widget";
 import { supabase } from "../../supabaseClient";
 
 
 const MainTable = () => {
 	const [participants, setParticipants] = useState([])
+	const [columnId, setColumnId] = useState(null)
 
-	console.log("participants", participants)
 	useEffect(() => {
 		getItems().then(setParticipants).catch(console.error)
 
@@ -19,11 +19,22 @@ const MainTable = () => {
 			.channel('custom-all-channel')
 			.on(
 				'postgres_changes',
-				{ event: 'INSERT', schema: 'public', table: 'your_table' },
+				{ event: 'INSERT', schema: 'public', table: 'medical_professionals' },
 				(payload) => {
-					setData((prevData) => [payload.new, ...prevData]);
+					setParticipants((prevData) => [payload.new, ...prevData]);
 				}
 			)
+			.on(
+				'postgres_changes',
+				{ event: 'UPDATE', schema: 'public', table: 'medical_professionals' },
+				(payload) => {
+				  setParticipants((prev) =>
+					prev.map((item) =>
+					  item.id === payload.new.id ? payload.new : item
+					)
+				  );
+				}
+			  )
 			.subscribe();
 
 			// Cleanup on unmount
@@ -33,9 +44,15 @@ const MainTable = () => {
 
 	}, [])
 
+	const handleColumnAction = (e) => {
+		if(columnId === e) {
+			setColumnId(null)
+		} else setColumnId(e)
+	}
+
 	return (
 		<div>
-			<div className="flex gap-[50px]">
+			<div className="flex">
 				<div className="sidebar w-[30%] border-r-[1px] pl-[20px] pr-[40px] pt-[40px] bg-[#08312a]">
 					<svg className="w-[200px]" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 1000 302">
 						<defs>
@@ -64,16 +81,21 @@ const MainTable = () => {
 						</div>
 					</div>
 				</div>
-				<div className="w-[100%] pt-[20px] pr-[20px] h-[100vh] overflow-y-scroll">
+				<div className="w-[100%] pt-[20px] pl-[50px] pr-[20px] h-[100vh] overflow-y-scroll bg-[#0c5236]">
 					<div className="p-[10px]">
 						<input className="w-[100%]" type="text" placeholder="Enter Keyword" />
 					</div>
 					<DataTable
 						highlightOnHover
-						columns={columns}
+						columns={
+							columns({
+								columnId: columnId,
+								setColumnId: (e) => handleColumnAction(e)
+							})
+						}
 						data={participants}
 						selectableRows
-						// theme="solarized"
+						theme="boehringer"
 					/>
 				</div>
 			</div>
