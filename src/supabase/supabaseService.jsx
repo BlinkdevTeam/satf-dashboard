@@ -9,7 +9,7 @@ export const createItem = async (data) => {
 
 // Read
 export const getItems = async () => {
-    const { data, error } = await supabase.from('medical_professionals').select('*')
+    const { data, error } = await supabase.from('medical_professionals').select('*').order('created_at', { ascending: false });
     console.log("data", data)
 
     if (error) throw error
