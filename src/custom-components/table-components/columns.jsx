@@ -6,6 +6,8 @@ export const columns = (props) => {
     const column = [
         {
             name: 'Email',
+            sortable: true,
+		    reorder: true,
             selector: (row => {
                 // console.log("row title", row)
                 return row.email_address
@@ -13,6 +15,8 @@ export const columns = (props) => {
         },
         {
             name: 'First Name',
+            sortable: true,
+		    reorder: true,
             selector: (row => {
                 // console.log("row title", row)
                 return row.first_name
@@ -27,6 +31,8 @@ export const columns = (props) => {
         },
         {
             name: 'Last Name',
+            sortable: true,
+		    reorder: true,
             selector: (row => {
                 // console.log("row title", row)
                 return row.last_name
@@ -34,16 +40,18 @@ export const columns = (props) => {
         },
         {
             name: 'Time In',
+            sortable: true,
+		    reorder: true,
             selector: (row => {
-                // console.log("row title", row)
-                return row.time_in
+                return row.time_in ? new Date(row.time_in).toLocaleString() : ''
             }),
         },
         {
             name: 'Time Out',
+            sortable: true,
+		    reorder: true,
             selector: (row => {
-                // console.log("row title", row)
-                return row.time_out
+                return row.time_out ? new Date(row.time_out).toLocaleString() : ''
             }),
         },
         // {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import DataTable from 'react-data-table-component';
 import { columns } from './columns';
-import { getItems } from '../../supabase/supabaseService';
+import { getItems, deleteWithCharaters } from '../../supabase/supabaseService';
 import Widget from "../Widget";
 import { supabase } from "../../supabaseClient";
 import { useDebounce } from "../config/debounce";
@@ -10,13 +10,14 @@ import { updateItem } from '../../supabase/supabaseService';
 
 const MainTable = () => {
 	const [searchTerm, setSearchTerm] = useState('');
+	const [allParticipants, setAllparticipants] = useState([])
 	const [participants, setParticipants] = useState([]);
 	const [columnId, setColumnId] = useState(null);
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 	const [colorTheme, setColorTheme] = useState(true)
 	const selectedParticipant = participants.filter((item) => item.id === columnId)
 	const timeStamped = new Date().toISOString();
-	
+	const localeTimeStamped = new Date().toLocaleString()
     const conditionalRowStyles = [
         {
           when: row => row.id === columnId, // or any unique identifier
@@ -27,8 +28,11 @@ const MainTable = () => {
           },
         },
       ];
+	
+
 	useEffect(() => {
 		getItems().then(setParticipants).catch(console.error)
+		getItems().then(setAllparticipants).catch(console.error)
 
 		//for realtime update
 		const channel = supabase
@@ -38,6 +42,7 @@ const MainTable = () => {
 				{ event: 'INSERT', schema: 'public', table: 'medical_professionals' },
 				(payload) => {
 					setParticipants((prevData) => [payload.new, ...prevData]);
+					setAllparticipants((prevData) => [payload.new, ...prevData]);
 				}
 			)
 			.on(
@@ -45,6 +50,12 @@ const MainTable = () => {
 				{ event: 'UPDATE', schema: 'public', table: 'medical_professionals' },
 				(payload) => {
 				  setParticipants((prev) =>
+					prev.map((item) =>
+					  item.id === payload.new.id ? payload.new : item
+					)
+				  );
+
+				  setAllparticipants((prev) =>
 					prev.map((item) =>
 					  item.id === payload.new.id ? payload.new : item
 					)
@@ -97,31 +108,38 @@ const MainTable = () => {
 		} else setColumnId(e)
 	}
 
-	const handleUpdate = async (id, newData) => {
+	const handleUpdate = async (email, firstName, lastName, newData) => {
 		try {
-			await updateItem(id, newData)
-		// Optional: show toast or confirmation
+			await updateItem(email, firstName, lastName, newData)
 		} catch (error) {
 			console.error('Update failed:', error)
 		}
 	}
 
-	const handleLogs = (email, logType) => {
+	const handleLogs = (email, firstName, lastName, logType) => {
 		if(logType === "in") {
-			handleUpdate(email, {time_in: timeStamped})
+			handleUpdate(email, firstName, lastName, {time_in: timeStamped, formatted_timein: localeTimeStamped})
 		} else if(logType === "out") {
-			handleUpdate(email, {time_out: timeStamped})
+			handleUpdate(email, firstName, lastName, {time_out: timeStamped, formatted_timeout: localeTimeStamped})
 		} else if(logType === "del-in") {
-			handleUpdate(email, {time_in: null})
+			handleUpdate(email, firstName, lastName, {time_in: null})
 		} else if(logType === "del-out") {
-			handleUpdate(email, {time_out: null})
+			handleUpdate(email, firstName, lastName, {time_out: null})
+		}
+	}
+
+	const handleBulkDeletion = async () => {
+		try {
+			await deleteWithCharaters()
+		} catch (error) {
+			console.error('Update failed:', error)
 		}
 	}
 
 	return (
 		<div>
 			<div className="flex">
-				<div className={`sidebar flex flex-col justify-between w-[30%] border-r-[1px]  pl-[20px] pr-[40px] py-[40px] ${colorTheme ? "bg-[#08312a]" : "bg-[#ffffff]"}`}>
+				<div className={`sidebar flex flex-col justify-between w-[500px] border-r-[1px]  pl-[20px] pr-[40px] py-[40px] ${colorTheme ? "bg-[#08312a]" : "bg-[#ffffff]"}`}>
 					<div>
 						<svg className="w-[200px]" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 1000 302">
 							<defs>
@@ -151,7 +169,7 @@ const MainTable = () => {
 								<Widget
 									title="Total Registered Participants"
 									logo="BI"
-									figure={participants.length}
+									figure={allParticipants.length}
 									type="text"
 									colorTheme={colorTheme}
 								/>
@@ -160,7 +178,7 @@ const MainTable = () => {
 								<Widget
 									title="Current Logged In Participants"
 									logo="BI"
-									figure={participants.filter((item) => item.time_in !== null).length}
+									figure={allParticipants.filter((item) => item.time_in !== null).length}
 									type="text"
 									colorTheme={colorTheme}
 								/>
@@ -173,11 +191,11 @@ const MainTable = () => {
 										<div className="text-[14px] font-[700]">
 											<div className={`${colorTheme ? "bg-[#174e35]" : "bg-[#f2f2f2]"} px-[20px] py-[20px]`}>
 												<div className="flex gap-[10px]">
-													<div onClick={() => handleLogs(i.email_address, "in")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#08312a] px-[20px] w-[100%] py-[5px]"> 
-														<p className="text-[#19473e]">Time In</p>
+													<div onClick={() => handleLogs(i.email_address, "in")} className={`cursor-pointer flex rounded-[4px] justify-center ${colorTheme ? "bg-[#08312a]" : "bg-[#cacaca]"} px-[20px] w-[100%] py-[5px]`}> 
+														<p className={`${colorTheme ? "text-[#19473e]" : "text-[#dbdbdb]"}`}>Time In</p>
 													</div>
-													<div onClick={() => handleLogs(i.email_address, "out")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#08312a] px-[20px] w-[100%] py-[5px]"> 
-														<p className="text-[#19473e]">Time Out</p>
+													<div onClick={() => handleLogs(i.email_address, "out")} className={`cursor-pointer flex rounded-[4px] justify-center ${colorTheme ? "bg-[#08312a]" : "bg-[#cacaca]"} px-[20px] w-[100%] py-[5px]`}> 
+														<p className={`${colorTheme ? "text-[#19473e]" : "text-[#dbdbdb]"}`}>Time Out</p>
 													</div>
 												</div>
 												<div className="flex justify-center pt-[20px]">
@@ -192,10 +210,10 @@ const MainTable = () => {
 											<div className={`${colorTheme ? "bg-[#174e35]" : "bg-[#f2f2f2]"} py-[20px] rounded-[8px]`}>
 												<div className="px-[20px]">
 													<div className="flex gap-[10px] pb-[20px] bg-[]">
-														<div onClick={() => handleLogs(i.email_address, "in")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
+														<div onClick={() => handleLogs(i.email_address, i.first_name, i.last_name, "in")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
 															<p className="group-hover:text-[#000000] text-[#08312a]">Time In</p>
 														</div>
-														<div onClick={() => handleLogs(i.email_address, "out")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
+														<div onClick={() => handleLogs(i.email_address, i.first_name, i.last_name, "out")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
 															<p className="group-hover:text-[#000000] text-[#08312a]">Time Out</p>
 														</div>
 													</div>
@@ -243,6 +261,11 @@ const MainTable = () => {
 															<p className={`group-hover:text-[#000000] ${colorTheme ? "text-[#dbdbdb]" : "text-[#000000]"}`}>Delete Time Out</p>
 														</div>
 													</div>
+													{/* <div className="group">
+														<div onClick={() => handleBulkDeletion()} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
+															<p className={`text-[red] font-[700]`}>Bulk Delete</p>
+														</div>
+													</div> */}
 												</div>
 											</div>
 										</div>
