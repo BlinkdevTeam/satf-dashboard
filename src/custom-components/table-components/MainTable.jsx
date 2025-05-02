@@ -2,14 +2,16 @@ import { useEffect, useState } from "react"
 import DataTable from 'react-data-table-component';
 import { columns } from './columns';
 import { getItems } from '../../supabase/supabaseService';
-// import { tableTheme } from "./columns";
 import Widget from "../Widget";
 import { supabase } from "../../supabaseClient";
+import { useDebounce } from "../config/debounce";
 
 
 const MainTable = () => {
-	const [participants, setParticipants] = useState([])
-	const [columnId, setColumnId] = useState(null)
+	const [searchTerm, setSearchTerm] = useState('');
+	const [participants, setParticipants] = useState([]);
+	const [columnId, setColumnId] = useState(null);
+	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
 	useEffect(() => {
 		getItems().then(setParticipants).catch(console.error)
@@ -42,7 +44,38 @@ const MainTable = () => {
 				supabase.removeChannel(channel);
 			};
 
-	}, [])
+	}, []);
+
+	useEffect(() => {
+		const search = async () => {
+		  let data, error;
+	
+		  if (debouncedSearchTerm.trim() === '') {
+			// No search term: fetch all
+			({ data, error } = await supabase
+			  .from('medical_professionals')
+			  .select('*'));
+		  } else {
+			// Filter by multiple fields
+			({ data, error } = await supabase
+			  .from('medical_professionals')
+			  .select('*')
+			  .or(
+				`first_name.ilike.%${debouncedSearchTerm}%,middle_name.ilike.%${debouncedSearchTerm}%,last_name.ilike.%${debouncedSearchTerm}%,email_address.ilike.%${debouncedSearchTerm}%`
+			  ));
+		  }
+	
+		  if (error) {
+			console.error('Search error:', error.message);
+		  } else {
+			setParticipants(data);
+		  }
+		};
+	
+		search();
+	  }, [debouncedSearchTerm]);
+
+	
 
 	const handleColumnAction = (e) => {
 		if(columnId === e) {
@@ -53,13 +86,13 @@ const MainTable = () => {
 	return (
 		<div>
 			<div className="flex">
-				<div className="sidebar w-[30%] border-r-[1px] pl-[20px] pr-[40px] pt-[40px] bg-[#08312a]">
+				<div className="sidebar w-[30%] border-r-[1px]  pl-[20px] pr-[40px] pt-[40px] bg-[#08312a]">
 					<svg className="w-[200px]" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 1000 302">
 						<defs>
 							<style>
 								{`
 									.cls-1 { 
-									fill:#dbdbdb;
+									fill:#00e47c;
 									stroke-width: 0px;
 									}
 								`}
@@ -81,9 +114,13 @@ const MainTable = () => {
 						</div>
 					</div>
 				</div>
-				<div className="w-[100%] pt-[20px] pl-[50px] pr-[20px] h-[100vh] overflow-y-scroll bg-[#0c5236]">
-					<div className="p-[10px]">
-						<input className="w-[100%]" type="text" placeholder="Enter Keyword" />
+				<div className="w-[100%] pt-[20px] pl-[50px] pr-[20px] h-[100vh] overflow-y-scroll bg-[#376251]">
+					<div className="mb-[20px]">
+						<input 
+							className="bg-[#08312a] w-[100%] py-[10px] pr-[10px] pl-[20px] text-[#ffffff]" type="text" placeholder="Enter Keyword" 
+							value={searchTerm}
+        					onChange={(e) => setSearchTerm(e.target.value)}
+						/>
 					</div>
 					<DataTable
 						highlightOnHover
@@ -94,8 +131,10 @@ const MainTable = () => {
 							})
 						}
 						data={participants}
-						selectableRows
+						striped //how to customized this
+						fixedHeader
 						theme="boehringer"
+						pagination
 					/>
 				</div>
 			</div>
