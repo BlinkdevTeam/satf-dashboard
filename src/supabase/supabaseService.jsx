@@ -26,10 +26,9 @@ export const getTimeins = async () => {
 };
 
 // Update
-export const updateItem = async (email, firstName, lastName, data) => {
-    const { data: result, error } = await supabase.from('medical_professionals').update(data).eq('email_address', email)
+export const updateItem = async (email, data) => {
+    const { data: result, error } = await supabase.from('medical_professionals').update(data).eq('email_address', email).select()
     if (error) throw error
-    alert("Welcome " + firstName + lastName )
     return result
 }
 

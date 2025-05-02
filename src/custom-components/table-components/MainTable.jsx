@@ -6,6 +6,7 @@ import Widget from "../Widget";
 import { supabase } from "../../supabaseClient";
 import { useDebounce } from "../config/debounce";
 import { updateItem } from '../../supabase/supabaseService';
+import { ClockLoader } from "react-spinners";
 
 
 const MainTable = () => {
@@ -17,6 +18,8 @@ const MainTable = () => {
 	const [colorTheme, setColorTheme] = useState(true)
 	const selectedParticipant = participants.filter((item) => item.id === columnId)
 	const timeStamped = new Date().toISOString();
+	const [success, setSuccess] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const localeTimeStamped = new Date().toLocaleString()
     const conditionalRowStyles = [
         {
@@ -108,23 +111,35 @@ const MainTable = () => {
 		} else setColumnId(e)
 	}
 
-	const handleUpdate = async (email, firstName, lastName, newData) => {
-		try {
-			await updateItem(email, firstName, lastName, newData)
-		} catch (error) {
-			console.error('Update failed:', error)
-		}
-	}
+	const handleUpdate = (email, newData) => {
+		setLoading(true);
+	
+		setTimeout(() => {
+			(async () => {
+				try {
+					const res = await updateItem(email, newData);
+					if (res) {
+						setLoading(false);
+					}
+				} catch (error) {
+					console.error('Update failed:', error);
+					setLoading(false);
+				}
+			})();
+		}, 1000); // Add a delay in ms (e.g., 100ms)
+	};
+	
+	
 
-	const handleLogs = (email, firstName, lastName, logType) => {
+	const handleLogs = (email, logType) => {
 		if(logType === "in") {
-			handleUpdate(email, firstName, lastName, {time_in: timeStamped, formatted_timein: localeTimeStamped})
+			handleUpdate(email, {time_in: timeStamped, formatted_timein: localeTimeStamped})
 		} else if(logType === "out") {
-			handleUpdate(email, firstName, lastName, {time_out: timeStamped, formatted_timeout: localeTimeStamped})
+			handleUpdate(email, {time_out: timeStamped, formatted_timeout: localeTimeStamped})
 		} else if(logType === "del-in") {
-			handleUpdate(email, firstName, lastName, {time_in: null})
+			handleUpdate(email, {time_in: null})
 		} else if(logType === "del-out") {
-			handleUpdate(email, firstName, lastName, {time_out: null})
+			handleUpdate(email, {time_out: null})
 		}
 	}
 
@@ -149,7 +164,9 @@ const MainTable = () => {
 											`.cls-1 { 
 											fill:#00e47c;
 											stroke-width: 0px;
-											}` :
+											}` 
+											
+											:
 										  
 											`.cls-1 { 
 											fill:#000000;
@@ -208,65 +225,74 @@ const MainTable = () => {
 									selectedParticipant.map(i => (
 										<div key={"selc-participant" + i.id} className={`text-[14px] ${colorTheme ? "text-[#dbdbdb]" : "text-[#000000]"}`}>
 											<div className={`${colorTheme ? "bg-[#174e35]" : "bg-[#f2f2f2]"} py-[20px] rounded-[8px]`}>
-												<div className="px-[20px]">
-													<div className="flex gap-[10px] pb-[20px] bg-[]">
-														<div onClick={() => handleLogs(i.email_address, i.first_name, i.last_name, "in")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
-															<p className="group-hover:text-[#000000] text-[#08312a]">Time In</p>
+												<>
+													<div className="px-[20px]">
+														<div className="flex gap-[10px] pb-[20px]">
+															{
+																loading ? 
+																	<div className="w-[100%] flex justify-center"><ClockLoader color="#00e47c"/></div> 
+																:
+																<>
+																	<div onClick={() => handleLogs(i.email_address, "in")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
+																		<p className="group-hover:text-[#000000] text-[#08312a]">Time In</p>
+																	</div>
+																	<div onClick={() => handleLogs(i.email_address, "out")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
+																		<p className="group-hover:text-[#000000] text-[#08312a]">Time Out</p>
+																	</div>
+																</>
+															}
 														</div>
-														<div onClick={() => handleLogs(i.email_address, i.first_name, i.last_name, "out")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
-															<p className="group-hover:text-[#000000] text-[#08312a]">Time Out</p>
+														<div className="pt-[10px]">
+															<div className="py-[10px] text-[14px] font-[700]">
+																<p>Participant's Details</p>
+															</div>
+															<div className="flex flex-col gap-[10px]">
+																<div>
+																	<h6 className="font-[300] text-[12px] text-[#9ebdae]">Participant:</h6>
+																	<h6 className="font-[700] text-[16px]">{i.first_name} {i.middle_name} {i.last_name}</h6>
+																</div>
+																<div>
+																	<p className="font-[300] text-[12px] text-[#9ebdae]">PRC Liscence:</p>
+																	<p className="font-[700] text-[16px]">{i.prc_license}</p>
+																</div>
+																<div>
+																	<p className="font-[300] text-[12px] text-[#9ebdae]">ID:</p>
+																	<p className="font-[700] text-[16px]">{i.id}</p>
+																</div>
+																<div>
+																	<p className="font-[300] text-[12px] text-[#9ebdae]">Email:</p>
+																	<p className="font-[700] text-[16px]">{i.email_address}</p>
+																</div>
+																<div>
+																	<p className="font-[300] text-[12px] text-[#9ebdae]">Address:</p>
+																	<p className="font-[700] text-[16px]">{i.address}</p>
+																</div>
+																<div>
+																	<p className="font-[300] text-[12px] text-[#9ebdae]">Mobile:</p>
+																	<p className="font-[700] text-[16px]">{i.mobile_number}</p>
+																</div>
+															</div>
 														</div>
 													</div>
-													<div className="pt-[10px]">
-														<div className="py-[10px] text-[14px] font-[700]">
-															<p>Participant's Details</p>
-														</div>
-														<div className="flex flex-col gap-[10px]">
-															<div>
-																<h6 className="font-[300] text-[12px] text-[#9ebdae]">Participant:</h6>
-																<h6 className="font-[700] text-[16px]">{i.first_name} {i.middle_name} {i.last_name}</h6>
-															</div>
-															<div>
-																<p className="font-[300] text-[12px] text-[#9ebdae]">PRC Liscence:</p>
-																<p className="font-[700] text-[16px]">{i.prc_license}</p>
-															</div>
-															<div>
-																<p className="font-[300] text-[12px] text-[#9ebdae]">ID:</p>
-																<p className="font-[700] text-[16px]">{i.id}</p>
-															</div>
-															<div>
-																<p className="font-[300] text-[12px] text-[#9ebdae]">Email:</p>
-																<p className="font-[700] text-[16px]">{i.email_address}</p>
-															</div>
-															<div>
-																<p className="font-[300] text-[12px] text-[#9ebdae]">Address:</p>
-																<p className="font-[700] text-[16px]">{i.address}</p>
-															</div>
-															<div>
-																<p className="font-[300] text-[12px] text-[#9ebdae]">Mobile:</p>
-																<p className="font-[700] text-[16px]">{i.mobile_number}</p>
-															</div>
-														</div>
-													</div>
-												</div>
 
-												<div className="pt-[20px]">
-													<div className="group">
-														<div onClick={() => handleLogs(i.email_address, "del-in")} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
-															<p className={`group-hover:text-[#000000] ${colorTheme ? "text-[#dbdbdb]" : "text-[#000000]"}`}>Delete Time In</p>
+													<div className="pt-[20px]">
+														<div className="group">
+															<div onClick={() => handleLogs(i.email_address, "del-in")} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
+																<p className={`group-hover:text-[#000000] ${colorTheme ? "text-[#dbdbdb]" : "text-[#000000]"}`}>Delete Time In</p>
+															</div>
 														</div>
+														<div className="group">
+															<div onClick={() => handleLogs(i.email_address, "del-out")} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
+																<p className={`group-hover:text-[#000000] ${colorTheme ? "text-[#dbdbdb]" : "text-[#000000]"}`}>Delete Time Out</p>
+															</div>
+														</div>
+														{/* <div className="group">
+															<div onClick={() => handleBulkDeletion()} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
+																<p className={`text-[red] font-[700]`}>Bulk Delete</p>
+															</div>
+														</div> */}
 													</div>
-													<div className="group">
-														<div onClick={() => handleLogs(i.email_address, "del-out")} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
-															<p className={`group-hover:text-[#000000] ${colorTheme ? "text-[#dbdbdb]" : "text-[#000000]"}`}>Delete Time Out</p>
-														</div>
-													</div>
-													{/* <div className="group">
-														<div onClick={() => handleBulkDeletion()} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
-															<p className={`text-[red] font-[700]`}>Bulk Delete</p>
-														</div>
-													</div> */}
-												</div>
+												</>
 											</div>
 										</div>
 									))
