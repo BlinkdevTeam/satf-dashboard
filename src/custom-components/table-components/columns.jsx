@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import DataTable, { createTheme } from 'react-data-table-component';
 import { updateItem } from '../../supabase/supabaseService';
 
-export const columns = (props) => {    
+export const columns = (props) => {        
     const column = [
         {
             name: 'Email',
@@ -46,84 +46,84 @@ export const columns = (props) => {
                 return row.time_out
             }),
         },
-        {
-            name: 'Action',
-            width: "",
-            center: 1,
-            cell: ((row, index, column, id) => {
-                const timeStamped = new Date().toISOString();
+        // {
+        //     name: 'Action',
+        //     width: "",
+        //     center: 1,
+        //     cell: ((row, index, column, id) => {
+        //         const timeStamped = new Date().toISOString();
 
-                const popupRef = useRef();
+        //         const popupRef = useRef();
 
-                const handleElipsis = () => {
-                    props.setColumnId(row.id)
-                    console.log("row", row)
-                }
+        //         const handleElipsis = () => {
+        //             props.setColumnId(row.id)
+        //             console.log("row", row)
+        //         }
 
-                const handleUpdate = async (id, newData) => {
-                    try {
-                        await updateItem(id, newData)
-                    // Optional: show toast or confirmation
-                    } catch (error) {
-                        console.error('Update failed:', error)
-                    }
-                }
+        //         const handleUpdate = async (id, newData) => {
+        //             try {
+        //                 await updateItem(id, newData)
+        //             // Optional: show toast or confirmation
+        //             } catch (error) {
+        //                 console.error('Update failed:', error)
+        //             }
+        //         }
 
-                const handleLogs = (email, logType) => {
-                    if(logType === "in") {
-                        handleUpdate(email, {time_in: timeStamped})
-                    } else if(logType === "out") {
-                        handleUpdate(email, {time_out: timeStamped})
-                    } else if(logType === "del-in") {
-                        handleUpdate(email, {time_in: null})
-                    } else if(logType === "del-out") {
-                        handleUpdate(email, {time_out: null})
-                    }
+        //         const handleLogs = (email, logType) => {
+        //             if(logType === "in") {
+        //                 handleUpdate(email, {time_in: timeStamped})
+        //             } else if(logType === "out") {
+        //                 handleUpdate(email, {time_out: timeStamped})
+        //             } else if(logType === "del-in") {
+        //                 handleUpdate(email, {time_in: null})
+        //             } else if(logType === "del-out") {
+        //                 handleUpdate(email, {time_out: null})
+        //             }
 
-                    handleElipsis()
-                }
+        //             handleElipsis()
+        //         }
 
-                useEffect(() => {
-                    const handleClickOutside = (event) => {
-                      if (popupRef.current && !popupRef.current.contains(event.target)) {
-                        props.setColumnId(null);
-                      }
-                    };
+        //         useEffect(() => {
+        //             const handleClickOutside = (event) => {
+        //               if (popupRef.current && !popupRef.current.contains(event.target)) {
+        //                 props.setColumnId(null);
+        //               }
+        //             };
                 
-                    document.addEventListener('mousedown', handleClickOutside);
+        //             document.addEventListener('mousedown', handleClickOutside);
                     
-                    return () => {
-                      document.removeEventListener('mousedown', handleClickOutside);
-                    };
-                  }, [props.columnId]);
+        //             return () => {
+        //               document.removeEventListener('mousedown', handleClickOutside);
+        //             };
+        //           }, [props.columnId]);
                 
     
-                return (
-                    <div className="h-[100%] w-[50%] relative">
-                        <div onClick={handleElipsis} className="h-[100%] w-[100%] flex justify-center items-center">
-                            <p className="text-[16px] cursor-pointer h-[100%] w-[100%] flex justify-center items-center pb-[5px]">...</p>
-                        </div>
-                        {
-                            props.columnId === row.id && 
-                                <div ref={popupRef} className="absolute w-[200px] right-[20px] bottom-[-20px] bg-[#ffffff] shadow py-[10px] z-[9]">
-                                    <div onClick={() => handleLogs(row.email_address, "in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
-                                        <p className="text-[#000000]">Time In</p>
-                                    </div>
-                                    <div onClick={() => handleLogs(row.email_address, "out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
-                                        <p className="text-[#000000]">Time Out</p>
-                                    </div>
-                                    <div onClick={() => handleLogs(row.email_address, "del-in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
-                                        <p className="text-[#000000]">Delete Time In</p>
-                                    </div>
-                                    <div onClick={() => handleLogs(row.email_address, "del-out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
-                                        <p className="text-[#000000]">Delete Time Out</p>
-                                    </div>
-                                </div>
-                        }
-                    </div>
-                )
-            })
-        },
+        //         return (
+        //             <div className="h-[100%] w-[50%] relative">
+        //                 <div onClick={handleElipsis} className="h-[100%] w-[100%] flex justify-center items-center">
+        //                     <p className="text-[16px] cursor-pointer h-[100%] w-[100%] flex justify-center items-center pb-[5px]">...</p>
+        //                 </div>
+        //                 {
+        //                     props.columnId === row.id && 
+        //                         <div ref={popupRef} className="absolute w-[200px] right-[20px] bottom-[-20px] bg-[#ffffff] shadow py-[10px] z-[9]">
+        //                             <div onClick={() => handleLogs(row.email_address, "in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
+        //                                 <p className="text-[#000000]">Time In</p>
+        //                             </div>
+        //                             <div onClick={() => handleLogs(row.email_address, "out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
+        //                                 <p className="text-[#000000]">Time Out</p>
+        //                             </div>
+        //                             <div onClick={() => handleLogs(row.email_address, "del-in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
+        //                                 <p className="text-[#000000]">Delete Time In</p>
+        //                             </div>
+        //                             <div onClick={() => handleLogs(row.email_address, "del-out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
+        //                                 <p className="text-[#000000]">Delete Time Out</p>
+        //                             </div>
+        //                         </div>
+        //                 }
+        //             </div>
+        //         )
+        //     })
+        // },
     ];
 
     return column;
@@ -160,3 +160,6 @@ createTheme('boehringer', {
         default: "#dbdbdb"
     }
   });
+
+
+  
