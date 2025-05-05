@@ -17,6 +17,7 @@
     "react": "^19.0.0",
     "react-data-table-component": "^7.7.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2",
     "react-spinners": "^0.17.0",
     "styled-components": "^6.1.17",
     "tailwindcss": "^4.1.4"

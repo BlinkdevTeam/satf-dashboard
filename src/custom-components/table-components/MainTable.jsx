@@ -7,6 +7,8 @@ import { supabase } from "../../supabaseClient";
 import { useDebounce } from "../config/debounce";
 import { updateItem } from '../../supabase/supabaseService';
 import { ClockLoader } from "react-spinners";
+import { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast'
 
 
 const MainTable = () => {
@@ -111,35 +113,37 @@ const MainTable = () => {
 		} else setColumnId(e)
 	}
 
-	const handleUpdate = (email, newData) => {
+	const handleUpdate = (i, newData) => {
 		setLoading(true);
 	
 		setTimeout(() => {
 			(async () => {
 				try {
-					const res = await updateItem(email, newData);
+					const res = await updateItem(i.email, newData);
 					if (res) {
 						setLoading(false);
+						toast.success('Welcome ' + i.first_name + " " + i.last_name);
+						console.log("newData", newData)
 					}
 				} catch (error) {
 					console.error('Update failed:', error);
 					setLoading(false);
 				}
 			})();
-		}, 1000); // Add a delay in ms (e.g., 100ms)
+		}, 500); // Add a delay in ms (e.g., 100ms)
 	};
 	
 	
 
-	const handleLogs = (email, logType) => {
+	const handleLogs = (i, logType) => {
 		if(logType === "in") {
-			handleUpdate(email, {time_in: timeStamped, formatted_timein: localeTimeStamped})
+			handleUpdate(i, {time_in: timeStamped, formatted_timein: localeTimeStamped})
 		} else if(logType === "out") {
-			handleUpdate(email, {time_out: timeStamped, formatted_timeout: localeTimeStamped})
+			handleUpdate(i, {time_out: timeStamped, formatted_timeout: localeTimeStamped})
 		} else if(logType === "del-in") {
-			handleUpdate(email, {time_in: null})
+			handleUpdate(i, {time_in: null, formatted_timein: null})
 		} else if(logType === "del-out") {
-			handleUpdate(email, {time_out: null})
+			handleUpdate(i, {time_out: null, formatted_timeout: null})
 		}
 	}
 
@@ -153,6 +157,7 @@ const MainTable = () => {
 
 	return (
 		<div>
+			<Toaster position="top-left" reverseOrder={false} />
 			<div className="flex">
 				<div className={`sidebar flex flex-col justify-between w-[500px] border-r-[1px]  pl-[20px] pr-[40px] py-[40px] ${colorTheme ? "bg-[#08312a]" : "bg-[#ffffff]"}`}>
 					<div>
@@ -233,10 +238,10 @@ const MainTable = () => {
 																	<div className="w-[100%] flex justify-center"><ClockLoader color="#00e47c"/></div> 
 																:
 																<>
-																	<div onClick={() => handleLogs(i.email_address, "in")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
+																	<div onClick={() => handleLogs(i, "in")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
 																		<p className="group-hover:text-[#000000] text-[#08312a]">Time In</p>
 																	</div>
-																	<div onClick={() => handleLogs(i.email_address, "out")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
+																	<div onClick={() => handleLogs(i, "out")} className="cursor-pointer flex rounded-[4px] justify-center bg-[#dbdbdb] hover:bg-[#00e47c] px-[20px] w-[100%] py-[5px]"> 
 																		<p className="group-hover:text-[#000000] text-[#08312a]">Time Out</p>
 																	</div>
 																</>
