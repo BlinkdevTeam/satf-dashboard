@@ -156,6 +156,7 @@ const MainTable = () => {
 		}
 	}
 
+	console.log(searchTerm)
 	return (
 		<div>
 			<Toaster position="top-left" reverseOrder={false} />
