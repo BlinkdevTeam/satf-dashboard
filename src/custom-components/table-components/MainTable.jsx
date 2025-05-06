@@ -119,7 +119,8 @@ const MainTable = () => {
 		setTimeout(() => {
 			(async () => {
 				try {
-					const res = await updateItem(i.email, newData);
+					console.log("i", i)
+					const res = await updateItem(i.email_address, newData);
 					if (res) {
 						setLoading(false);
 						toast.success('Welcome ' + i.first_name + " " + i.last_name);
@@ -213,10 +214,10 @@ const MainTable = () => {
 										<div className="text-[14px] font-[700]">
 											<div className={`${colorTheme ? "bg-[#174e35]" : "bg-[#f2f2f2]"} px-[20px] py-[20px]`}>
 												<div className="flex gap-[10px]">
-													<div onClick={() => handleLogs(i.email_address, "in")} className={`cursor-pointer flex rounded-[4px] justify-center ${colorTheme ? "bg-[#08312a]" : "bg-[#cacaca]"} px-[20px] w-[100%] py-[5px]`}> 
+													<div className={`cursor-pointer flex rounded-[4px] justify-center ${colorTheme ? "bg-[#08312a]" : "bg-[#cacaca]"} px-[20px] w-[100%] py-[5px]`}> 
 														<p className={`${colorTheme ? "text-[#19473e]" : "text-[#dbdbdb]"}`}>Time In</p>
 													</div>
-													<div onClick={() => handleLogs(i.email_address, "out")} className={`cursor-pointer flex rounded-[4px] justify-center ${colorTheme ? "bg-[#08312a]" : "bg-[#cacaca]"} px-[20px] w-[100%] py-[5px]`}> 
+													<div className={`cursor-pointer flex rounded-[4px] justify-center ${colorTheme ? "bg-[#08312a]" : "bg-[#cacaca]"} px-[20px] w-[100%] py-[5px]`}> 
 														<p className={`${colorTheme ? "text-[#19473e]" : "text-[#dbdbdb]"}`}>Time Out</p>
 													</div>
 												</div>
@@ -282,12 +283,12 @@ const MainTable = () => {
 
 													<div className="pt-[20px]">
 														<div className="group">
-															<div onClick={() => handleLogs(i.email_address, "del-in")} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
+															<div onClick={() => handleLogs(i, "del-in")} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
 																<p className={`group-hover:text-[#000000] ${colorTheme ? "text-[#dbdbdb]" : "text-[#000000]"}`}>Delete Time In</p>
 															</div>
 														</div>
 														<div className="group">
-															<div onClick={() => handleLogs(i.email_address, "del-out")} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
+															<div onClick={() => handleLogs(i, "del-out")} className="cursor-pointer px-[20px] group-hover:bg-[#00e47c] w-[100%] py-[5px]"> 
 																<p className={`group-hover:text-[#000000] ${colorTheme ? "text-[#dbdbdb]" : "text-[#000000]"}`}>Delete Time Out</p>
 															</div>
 														</div>

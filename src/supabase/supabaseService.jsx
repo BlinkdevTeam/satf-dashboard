@@ -27,6 +27,8 @@ export const getTimeins = async () => {
 
 // Update
 export const updateItem = async (email, data) => {
+    console.log("email", email)
+    console.log("data", data)
     const { data: result, error } = await supabase.from('medical_professionals').update(data).eq('email_address', email).select()
     if (error) throw error
     return result
