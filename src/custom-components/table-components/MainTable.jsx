@@ -113,7 +113,7 @@ const MainTable = () => {
 		} else setColumnId(e)
 	}
 
-	const handleUpdate = (i, newData) => {
+	const handleUpdate = (i, newData, logType) => {
 		setLoading(true);
 	
 		setTimeout(() => {
@@ -123,7 +123,17 @@ const MainTable = () => {
 					const res = await updateItem(i.email_address, newData);
 					if (res) {
 						setLoading(false);
-						toast.success('Welcome ' + i.first_name + " " + i.last_name);
+						logType === "in" ? 
+							toast.success(i.first_name + " " + i.last_name + " has timed in") 
+						: 
+						logType === "out" ? 
+							toast.success(i.first_name + " " + i.last_name + " has timed out") 
+						:
+						logType === "del-in" ? 
+							toast.success(i.first_name + " " + i.last_name + " time-in was deleted") 
+						:
+						logType === "del-out" && 
+							toast.success(i.first_name + " " + i.last_name + " time-out was deleted") 
 						console.log("newData", newData)
 					}
 				} catch (error) {
@@ -138,13 +148,13 @@ const MainTable = () => {
 
 	const handleLogs = (i, logType) => {
 		if(logType === "in") {
-			handleUpdate(i, {time_in: timeStamped, formatted_timein: localeTimeStamped})
+			handleUpdate(i, {time_in: timeStamped, formatted_timein: localeTimeStamped}, logType)
 		} else if(logType === "out") {
-			handleUpdate(i, {time_out: timeStamped, formatted_timeout: localeTimeStamped})
+			handleUpdate(i, {time_out: timeStamped, formatted_timeout: localeTimeStamped}, logType)
 		} else if(logType === "del-in") {
-			handleUpdate(i, {time_in: null, formatted_timein: null})
+			handleUpdate(i, {time_in: null, formatted_timein: null}, logType)
 		} else if(logType === "del-out") {
-			handleUpdate(i, {time_out: null, formatted_timeout: null})
+			handleUpdate(i, {time_out: null, formatted_timeout: null}, logType)
 		}
 	}
 
@@ -306,7 +316,7 @@ const MainTable = () => {
 							}			
 						</div>
 					</div>
-					<div className="w-[100%] flex justify-end">
+					<div className="w-[100%] flex justify-end pt-[50px]">
 						<div onClick={() => setColorTheme(!colorTheme)} className={`cursor-pointer w-[60px] h-[30px] ${colorTheme ? "bg-[#00e47c]" : "bg-[#cacaca]"} rounded-full flex items-center relative`}>
 							<div className={`h-[28px] w-[28px] ${colorTheme ? "bg-[#08312A]" : "bg-[#ffffff]"} rounded-full absolute ${colorTheme ? 'left-[2px]' : 'left-[30px]'} transition-all duration-200 ease`}></div>			
 						</div>
