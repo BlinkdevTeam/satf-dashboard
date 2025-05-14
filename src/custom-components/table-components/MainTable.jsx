@@ -9,7 +9,8 @@ import { updateItem } from '../../supabase/supabaseService';
 import { ClockLoader } from "react-spinners";
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast'
-
+import { IoMdMoon } from "react-icons/io";
+import { FaSun } from "react-icons/fa6";
 
 const MainTable = () => {
 	const [searchTerm, setSearchTerm] = useState('');
@@ -318,7 +319,11 @@ const MainTable = () => {
 					</div>
 					<div className="w-[100%] flex justify-end pt-[50px]">
 						<div onClick={() => setColorTheme(!colorTheme)} className={`cursor-pointer w-[60px] h-[30px] ${colorTheme ? "bg-[#00e47c]" : "bg-[#cacaca]"} rounded-full flex items-center relative`}>
-							<div className={`h-[28px] w-[28px] ${colorTheme ? "bg-[#08312A]" : "bg-[#ffffff]"} rounded-full absolute ${colorTheme ? 'left-[2px]' : 'left-[30px]'} transition-all duration-200 ease`}></div>			
+							<div className={`h-[28px] w-[28px] ${colorTheme ? "bg-[#08312A]" : "bg-[#ffffff]"} rounded-full absolute ${colorTheme ? 'left-[2px]' : 'left-[30px]'} transition-all duration-200 ease`}>
+								<div className="z-[99] flex justify-center items-center w-[100%] h-[100%]">
+									{ colorTheme ? <IoMdMoon color="#00e47c"/> : <FaSun color="#000000"/>}
+								</div>	
+							</div>			
 						</div>
 					</div>
 				</div>
