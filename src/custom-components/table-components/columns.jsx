@@ -10,7 +10,7 @@ export const columns = (props) => {
 		    reorder: true,
             selector: (row => {
                 // console.log("row title", row)
-                return row.email_address
+                return row.email
             }),
         },
         {
@@ -22,13 +22,13 @@ export const columns = (props) => {
                 return row.first_name
             }),
         },
-        {
-            name: 'Middle Name',
-            selector: (row => {
-                // console.log("row title", row)
-                return row.middle_name
-            }),
-        },
+        // {
+        //     name: 'Middle Name',
+        //     selector: (row => {
+        //         // console.log("row title", row)
+        //         return row.middle_name
+        //     }),
+        // },
         {
             name: 'Last Name',
             sortable: true,
@@ -114,16 +114,16 @@ export const columns = (props) => {
         //                 {
         //                     props.columnId === row.id && 
         //                         <div ref={popupRef} className="absolute w-[200px] right-[20px] bottom-[-20px] bg-[#ffffff] shadow py-[10px] z-[9]">
-        //                             <div onClick={() => handleLogs(row.email_address, "in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
+        //                             <div onClick={() => handleLogs(row.email, "in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
         //                                 <p className="text-[#000000]">Time In</p>
         //                             </div>
-        //                             <div onClick={() => handleLogs(row.email_address, "out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
+        //                             <div onClick={() => handleLogs(row.email, "out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
         //                                 <p className="text-[#000000]">Time Out</p>
         //                             </div>
-        //                             <div onClick={() => handleLogs(row.email_address, "del-in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
+        //                             <div onClick={() => handleLogs(row.email, "del-in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
         //                                 <p className="text-[#000000]">Delete Time In</p>
         //                             </div>
-        //                             <div onClick={() => handleLogs(row.email_address, "del-out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
+        //                             <div onClick={() => handleLogs(row.email, "del-out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
         //                                 <p className="text-[#000000]">Delete Time Out</p>
         //                             </div>
         //                         </div>
@@ -143,7 +143,7 @@ createTheme('boehringer', {
       secondary: '#dbdbdb',
     },
     background: {
-      default: '#08312a',
+      default: '#f2f2f2',
     },
     context: {
       background: '#cb4b16',
