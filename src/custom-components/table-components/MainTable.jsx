@@ -91,7 +91,7 @@ const MainTable = () => {
 			  .from('sat_forum_registrations')
 			  .select('*')
 			  .or(
-				`first_name.ilike.%${debouncedSearchTerm}%,middle_name.ilike.%${debouncedSearchTerm}%,last_name.ilike.%${debouncedSearchTerm}%,email.ilike.%${debouncedSearchTerm}%`
+				`first_name.ilike.%${debouncedSearchTerm}%,last_name.ilike.%${debouncedSearchTerm}%,email.ilike.%${debouncedSearchTerm}%`
 			  ));
 		  }
 	
