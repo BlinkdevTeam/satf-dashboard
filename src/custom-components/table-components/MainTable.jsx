@@ -28,13 +28,12 @@ const MainTable = () => {
         {
           when: row => row.id === columnId, // or any unique identifier
           style: {
-            backgroundColor: '#d1e7dd',  // light green
-            color: '#0f5132',            // darker green text
+            backgroundColor: '#fec40514',  // light green
+            color: '#111111',            // darker green text
             fontWeight: 'bold',
           },
         },
       ];
-	
 
 	useEffect(() => {
 		getItems().then(setParticipants).catch(console.error)
