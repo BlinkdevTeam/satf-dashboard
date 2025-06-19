@@ -283,28 +283,16 @@ const MainTable = () => {
 																</div>
 																<div className="flex flex-col gap-[10px]">
 																	<div>
-																		<h6 className="font-[300] text-[12px] text-[#fff]">Participant:</h6>
+																		<h6 className="font-[300] text-[12px] text-[#fff]">Participant :</h6>
 																		<h6 className="font-[700] text-[16px]">{i.first_name} {i.middle_name} {i.last_name}</h6>
 																	</div>
 																	<div>
-																		<p className="font-[300] text-[12px] text-[#fff]">PRC Liscence:</p>
-																		<p className="font-[700] text-[16px]">{i.prc_license}</p>
-																	</div>
-																	<div>
-																		<p className="font-[300] text-[12px] text-[#fff]">ID:</p>
+																		<p className="font-[300] text-[12px] text-[#fff]">ID :</p>
 																		<p className="font-[700] text-[16px]">{i.id}</p>
 																	</div>
 																	<div>
-																		<p className="font-[300] text-[12px] text-[#fff]">Email:</p>
+																		<p className="font-[300] text-[12px] text-[#fff]">Email :</p>
 																		<p className="font-[700] text-[16px]">{i.email}</p>
-																	</div>
-																	<div>
-																		<p className="font-[300] text-[12px] text-[#fff]">Address:</p>
-																		<p className="font-[700] text-[16px]">{i.address}</p>
-																	</div>
-																	<div>
-																		<p className="font-[300] text-[12px] text-[#fff]">Mobile:</p>
-																		<p className="font-[700] text-[16px]">{i.mobile_number}</p>
 																	</div>
 																</div>
 															</div>

@@ -19,24 +19,47 @@ export const columns = (props) => {
 		    reorder: true,
             selector: (row => {
                 // console.log("row title", row)
-                return row.first_name
+                return row.first_name_upper
             }),
         },
-        // {
-        //     name: 'Middle Name',
-        //     selector: (row => {
-        //         // console.log("row title", row)
-        //         return row.middle_name
-        //     }),
-        // },
         {
             name: 'Last Name',
             sortable: true,
 		    reorder: true,
             selector: (row => {
                 // console.log("row title", row)
-                return row.last_name
+                return row.last_name_upper
             }),
+        },
+       {
+            name: 'Selected Event Date',
+            sortable: true,
+            reorder: true,
+            cell: row => {
+                const eventMap = {
+                event1: "JULY 17, 2025",
+                event2: "JULY 24, 2025",
+                };
+
+                let eventDates = [];
+
+                // Handle both string and array
+                if (Array.isArray(row.selected_events)) {
+                eventDates = row.selected_events.map(event => eventMap[event]).filter(Boolean);
+                } else if (typeof row.selected_events === 'string') {
+                eventDates = [eventMap[row.selected_events]].filter(Boolean);
+                }
+
+                const display = eventDates.length > 1
+                ? eventDates.join(" & ")
+                : eventDates[0] || "—";
+
+                return (
+                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                    {display}
+                </span>
+                );
+            },
         },
         {
             name: 'Time In',
@@ -54,84 +77,6 @@ export const columns = (props) => {
                 return row.time_out ? new Date(row.time_out).toLocaleString() : ''
             }),
         },
-        // {
-        //     name: 'Action',
-        //     width: "",
-        //     center: 1,
-        //     cell: ((row, index, column, id) => {
-        //         const timeStamped = new Date().toISOString();
-
-        //         const popupRef = useRef();
-
-        //         const handleElipsis = () => {
-        //             props.setColumnId(row.id)
-        //             console.log("row", row)
-        //         }
-
-        //         const handleUpdate = async (id, newData) => {
-        //             try {
-        //                 await updateItem(id, newData)
-        //             // Optional: show toast or confirmation
-        //             } catch (error) {
-        //                 console.error('Update failed:', error)
-        //             }
-        //         }
-
-        //         const handleLogs = (email, logType) => {
-        //             if(logType === "in") {
-        //                 handleUpdate(email, {time_in: timeStamped})
-        //             } else if(logType === "out") {
-        //                 handleUpdate(email, {time_out: timeStamped})
-        //             } else if(logType === "del-in") {
-        //                 handleUpdate(email, {time_in: null})
-        //             } else if(logType === "del-out") {
-        //                 handleUpdate(email, {time_out: null})
-        //             }
-
-        //             handleElipsis()
-        //         }
-
-        //         useEffect(() => {
-        //             const handleClickOutside = (event) => {
-        //               if (popupRef.current && !popupRef.current.contains(event.target)) {
-        //                 props.setColumnId(null);
-        //               }
-        //             };
-                
-        //             document.addEventListener('mousedown', handleClickOutside);
-                    
-        //             return () => {
-        //               document.removeEventListener('mousedown', handleClickOutside);
-        //             };
-        //           }, [props.columnId]);
-                
-    
-        //         return (
-        //             <div className="h-[100%] w-[50%] relative">
-        //                 <div onClick={handleElipsis} className="h-[100%] w-[100%] flex justify-center items-center">
-        //                     <p className="text-[16px] cursor-pointer h-[100%] w-[100%] flex justify-center items-center pb-[5px]">...</p>
-        //                 </div>
-        //                 {
-        //                     props.columnId === row.id && 
-        //                         <div ref={popupRef} className="absolute w-[200px] right-[20px] bottom-[-20px] bg-[#ffffff] shadow py-[10px] z-[9]">
-        //                             <div onClick={() => handleLogs(row.email, "in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
-        //                                 <p className="text-[#000000]">Time In</p>
-        //                             </div>
-        //                             <div onClick={() => handleLogs(row.email, "out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
-        //                                 <p className="text-[#000000]">Time Out</p>
-        //                             </div>
-        //                             <div onClick={() => handleLogs(row.email, "del-in")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
-        //                                 <p className="text-[#000000]">Delete Time In</p>
-        //                             </div>
-        //                             <div onClick={() => handleLogs(row.email, "del-out")} className="hover:bg-[#d0d0d0] w-[100%] py-[10px] px-[15px]"> 
-        //                                 <p className="text-[#000000]">Delete Time Out</p>
-        //                             </div>
-        //                         </div>
-        //                 }
-        //             </div>
-        //         )
-        //     })
-        // },
     ];
 
     return column;
