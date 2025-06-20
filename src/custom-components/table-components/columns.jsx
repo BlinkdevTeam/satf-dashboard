@@ -66,7 +66,7 @@ export const columns = (props) => {
             sortable: true,
 		    reorder: true,
             selector: (row => {
-                return row.time_in ? new Date(row.time_in).toLocaleString() : ''
+                return row.formatted_timein 
             }),
         },
         {
@@ -74,7 +74,7 @@ export const columns = (props) => {
             sortable: true,
 		    reorder: true,
             selector: (row => {
-                return row.time_out ? new Date(row.time_out).toLocaleString() : ''
+                return row.formatted_timeout
             }),
         },
     ];
